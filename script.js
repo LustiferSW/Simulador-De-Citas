@@ -1,3 +1,5 @@
+const OPENAI_API_KEY = "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"; // Reemplaza con tu clave de API de OpenAI
+
 function startGame() {
   const genderSelection = document.querySelector('input[name="gender"]:checked').value;
   let characterGender;
@@ -18,7 +20,7 @@ function startGame() {
 }
 
 // Función para enviar mensajes
-function sendMessage() {
+async function sendMessage() {
   const userInput = document.getElementById("user-input").value;
   const chatMessages = document.getElementById("chat-messages");
 
@@ -27,31 +29,43 @@ function sendMessage() {
     chatMessages.innerHTML += `<div class="user-message">Tú: ${userInput}</div>`;
     document.getElementById("user-input").value = ""; // Limpiar el campo de texto
 
-    // Simular la respuesta de Alex
-    setTimeout(() => {
-      const alexResponse = getAlexResponse(userInput);
+    // Simular la respuesta de Alex usando OpenAI
+    try {
+      const alexResponse = await getAlexResponse(userInput);
       chatMessages.innerHTML += `<div class="alex-message">Alex: ${alexResponse}</div>`;
-      chatMessages.scrollTop = chatMessages.scrollHeight; // Desplazar el chat hacia abajo
-    }, 1000); // Retraso de 1 segundo para simular que Alex está "pensando"
+    } catch (error) {
+      console.error("Error al obtener la respuesta de Alex:", error);
+      chatMessages.innerHTML += `<div class="alex-message">Alex: ¡Ups! Algo salió mal. Inténtalo de nuevo.</div>`;
+    }
+
+    chatMessages.scrollTop = chatMessages.scrollHeight; // Desplazar el chat hacia abajo
   }
 }
 
-// Función para generar respuestas de Alex
-function getAlexResponse(userInput) {
-  const responses = [
-    "¡Hola! ¿Cómo estás?",
-    "¿Qué tal tus clases?",
-    "Me encanta la programación, ¿y a ti?",
-    "¿Has hecho algún proyecto interesante últimamente?",
-    "¡Claro! Podemos trabajar juntos en eso.",
-    "¿Te gustaría tomar un café después de clase?",
-    "Jajaja, ¡qué gracioso!",
-    "No sé, ¿tú qué opinas?",
-    "¡Eso suena genial!",
-    "¿En qué asignatura necesitas ayuda?",
-  ];
+// Función para obtener la respuesta de Alex usando OpenAI
+async function getAlexResponse(userInput) {
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${OPENAI_API_KEY}`,
+    },
+    body: JSON.stringify({
+      model: "gpt-3.5-turbo", // Usa el modelo GPT-3.5
+      messages: [
+        {
+          role: "system",
+          content: "Eres Alex, una compañera de universidad amigable y divertida. Responde de manera natural y simpática.",
+        },
+        {
+          role: "user",
+          content: userInput,
+        },
+      ],
+      max_tokens: 100, // Límite de longitud de la respuesta
+    }),
+  });
 
-  // Seleccionar una respuesta aleatoria
-  const randomIndex = Math.floor(Math.random() * responses.length);
-  return responses[randomIndex];
+  const data = await response.json();
+  return data.choices[0].message.content;
 }
