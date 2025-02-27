@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tinder AI</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Simulador de Citas</h1>
+    <div id="character-creation">
+      <h2>Crea tu Personaje</h2>
+      <p>Selecciona el género de tu personaje:</p>
+      <label>
+        <input type="radio" name="gender" value="hombre"> Hombre
+      </label>
+      <label>
+        <input type="radio" name="gender" value="mujer"> Mujer
+      </label>
+      <label>
+        <input type="radio" name="gender" value="aleatorio"> Aleatorio
+      </label>
+      <button onclick="startGame()">Comenzar</button>
+    </div>
+    <div id="game" style="display: none;">
+  <h2>¡Comienza la Aventura!</h2>
+  <p id="character-info"></p>
+  <div id="chat">
+    <div id="chat-messages"></div>
+    <input type="text" id="user-input" placeholder="Escribe tu mensaje...">
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+</div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
